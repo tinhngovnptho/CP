@@ -1,7 +1,0 @@
-set "f=%~1"
-type C:\Tool\gentest.cpp > "%f%_gen.cpp"
-type nul > "%f%_bf.cpp"
-type nul > "%f%.ans"
-"%f%_gen.cpp"
-"%f%_bf.cpp"
-"%f%.ans"

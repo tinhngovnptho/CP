@@ -1,7 +1,7 @@
 // Author: tinhnopro (tinhngo)
 #include<bits/stdc++.h>
 
-#define name "d13guess"
+#define name ""
 #define el '\n'
 #define fi first
 #define se second
@@ -27,15 +27,15 @@ template<class T> using pairD = pair<T, T>;
 template<class T> using vector2d = vector<vector<T>>;
 
 template<class X, class Y> bool maximize(X &a, Y b) { 
-    return a < b ? a = b, 1 : 0; 
+	return a < b ? a = b, 1 : 0; 
 }
 
 template<class X, class Y> bool minimize(X &a, Y b) { 
-    return a > b ? a = b, 1 : 0; 
+	return a > b ? a = b, 1 : 0; 
 }
 
 template<class T> T Abs(const T &x) {
-    return x < 0 ? -x : x;
+	return x < 0 ? -x : x;
 }	
 //_______________________________________________________________________
 
@@ -43,36 +43,23 @@ template<class T> T Abs(const T &x) {
 // const int MOD = 1e9 + 7; 
 // const int INF = 1e9 + 11; // const ll INFF = 1e18 + 11; 
 
-int n;
 
 void process(void) {
-    cin >> n;
-    vector<ll> g(60, 0);
-    g[0] = 1;
-    g[1] = 1;
-    g[2] = 2;
-    g[3] = 3;
-    FOR(i, 0, 60) {
-        if (g[i] == 0 && i != 1) g[i] = g[i - 1] + g[i - 2];
-        if (g[i] >= n) {
-            cout << i << el;
-            return ;
-        }
-    }
+	
 }
 
 int32_t main(void) {
-    ios_base::sync_with_stdio(false); 
-    cin.tie(nullptr);
+	ios_base::sync_with_stdio(false); 
+	cin.tie(nullptr);
 
-    if (fopen(name".inp", "r")) {
-        freopen(name".inp", "r", stdin);
-        freopen(name".out", "w", stdout);
-    }
-    //___________________________________
-    // int t; cin >> t; while (t--)
-    process();
+	if (fopen(name".inp", "r")) {
+		freopen(name".inp", "r", stdin);
+		freopen(name".out", "w", stdout);
+	}
+	//___________________________________
+	// int t; cin >> t; while (t--)
+	process();
 
-    cerr << "\nRuntime: " << (1.0 * clock() / CLOCKS_PER_SEC) << "s\n";
-    return 0;
+	cerr << "\nRuntime: " << (1.0 * clock() / CLOCKS_PER_SEC) << "s\n";
+	return 0;
 }

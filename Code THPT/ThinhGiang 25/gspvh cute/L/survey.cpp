@@ -1,30 +1,27 @@
-// Author: tinhnopro (tinhngo)
+// Author: tinhnopro (ngh)
 #include<bits/stdc++.h>
 
-#define name "d13guess"
+using namespace std;
+
 #define el '\n'
 #define fi first
 #define se second
 #define FOR(i, a, b) for (int i = (a), _b = (b); i <= _b; ++i)
 #define FORD(i, a, b) for (int i = (a), _b = (b); i >= _b; --i)
 #define all(v) (v).begin(), (v).end()
-#define szv(v) int((v).size())
-#define sqr(x) 1ll * (x) * (x)
+#define szv(v) ((int)(v).size())
 #define mask(x) (1LL << (x))
 #define getbit(i, mask) ((mask >> i) & 1LL)
 #define onbit(i, mask) (mask | MASK(i))
 #define offbit(i, mask) mask & ~(MASK(i))
 #define cntbit(x) __builtin_popcountll(x)
 
-using namespace std;
+#define name "survey"
 
 using ll = long long;
-using db = long double;
+using ld = long double;
+using ii = pair<int, int>;
 using vi = vector<int>;
-
-template<class T> using pairD = pair<T, T>;  
-
-template<class T> using vector2d = vector<vector<T>>;
 
 template<class X, class Y> bool maximize(X &a, Y b) { 
     return a < b ? a = b, 1 : 0; 
@@ -34,31 +31,31 @@ template<class X, class Y> bool minimize(X &a, Y b) {
     return a > b ? a = b, 1 : 0; 
 }
 
-template<class T> T Abs(const T &x) {
-    return x < 0 ? -x : x;
-}	
-//_______________________________________________________________________
+template<class T> using vector2d = vector<vector<T>>;
 
-// const int MAXN = 5e5 + 11; // const int MAX = 1e6 + 11;
-// const int MOD = 1e9 + 7; 
-// const int INF = 1e9 + 11; // const ll INFF = 1e18 + 11; 
+const int MAXN = 51; // const int MAX = 1e6 + 11;
+// const int MOD = 1e9 + 7;
+// const int INF = 1e9 + 11; 
+// const ll INFF = 1e18 + 11; 
 
-int n;
+int n, p[MAXN], c[MAXN];
 
-void process(void) {
+void solve(void) {
     cin >> n;
-    vector<ll> g(60, 0);
-    g[0] = 1;
-    g[1] = 1;
-    g[2] = 2;
-    g[3] = 3;
-    FOR(i, 0, 60) {
-        if (g[i] == 0 && i != 1) g[i] = g[i - 1] + g[i - 2];
-        if (g[i] >= n) {
-            cout << i << el;
-            return ;
+    FOR(i, 1, n) cin >> p[i];
+    FOR(i, 1, n) cin >> c[i];
+
+    cout << 1 << el;
+    int x = c[1], y = p[1], pos = 1;
+    FOR(i, 2, n) {
+        if (1ll * x * p[i] < 1ll * y * c[i]) {
+            x = c[i];
+            y = p[i];
+            pos = i;
         }
     }
+
+    cout << pos;
 }
 
 int32_t main(void) {
@@ -71,8 +68,8 @@ int32_t main(void) {
     }
     //___________________________________
     // int t; cin >> t; while (t--)
-    process();
+    solve();
 
-    cerr << "\nRuntime: " << (1.0 * clock() / CLOCKS_PER_SEC) << "s\n";
+    cerr << "Runtime: " << (1.0 * clock() / CLOCKS_PER_SEC) << "s\n";
     return 0;
 }
