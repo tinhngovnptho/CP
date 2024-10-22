@@ -43,23 +43,34 @@ template<class X, class Y> bool minimize(X &a, Y b) {
 // const int64_t INFF = (int64_t) 1e18 + 7;
 //_______________________________________________________________________________________________
 
+mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 
-void process(void) {
-	
+int64_t randInt(int64_t a, int64_t b) {
+    return uniform_int_distribution<int>(a, b) (rng);
+}
+
+#define name ""
+
+void gentest(void) {
+    ofstream out(name".out");
+    
+
+    out.close();
 }
 
 int32_t main(void) {
-	ios_base::sync_with_stdio(false); cin.tie(nullptr);
-	
-	#define name ""
-	if (fopen(name".inp", "r")) {
-		freopen(name".inp", "r", stdin); 
-		freopen(name".out", "w", stdout);
-	}
-	//____________________________________________________
-	// int t; cin >> t; while (t--)
-	process();
 
-	cerr << "\nRuntime: " << (1.0 * clock() / CLOCKS_PER_SEC) << "s. Code by Tinhnopro\n";
+    int test = 100;
+    
+    while(test--) {
+        gentest();
+        system(name".exe");
+        system(name"_bf.exe");
+        if (system("fc "name".out "name".ans") != 0) {
+            cout << "WA";
+            return 0;
+        }
+    }
+
 	return 0;
 }
