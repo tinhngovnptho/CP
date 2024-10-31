@@ -1,76 +1,55 @@
 /*
-	Author: Tinhnopro (Tinh nop)
-	From: CHV with luv <3
-	while (true) coding();
-*/
-#include<bits/stdc++.h>
-
-#define el '\n'
-#define fi first
-#define se second
-
-#define all(v) (v).begin(), (v).end()
-#define size(v) int((v).size())
-#define eb emplace_back
-
-#define FOR(i, a, b) for (int i = (a), _b = (b); i <= _b; ++i)
-#define FORD(i, a, b) for (int i = (a), _b = (b); i >= _b; --i)
-
-#define Mask(x) (1LL << (x))
-#define getbit(i, mask) ((mask >> i) & 1LL)
-#define onbit(i, mask) (mask | Mask(i))
-#define offbit(i, mask) (mask & ~(Mask(i)))
-#define cntbit(x) __builtin_popcountll(x)
-#define Log2(x) (63 - __builtin_clzll(x))
+    Author: Tinhnopro (Tinh nop)
+    From: CHV Phu Tho
+ */
+#include <bits/stdc++.h>
 
 using namespace std;
 
-using db = long double;
-using vi = vector<int>;
-using vvi = vector<vi>;
-using ii = pair<int, int>;
+template <typename T, int D>
+struct vec : public vector<vec<T, D - 1>> {
+    static_assert(D >= 1, "Init error");
+    template <typename... Args>
+    vec(int n = 0, Args... args) : vector<vec<T, D - 1>>(n, vec<T, D - 1>(args...)) {}
+};
 
-template<class X, class Y> bool maximize(X &a, Y b) { 
-	return a < b ? a = b, 1 : 0; 
+template <typename T>
+struct vec<T, 1> : public vector<T> {
+    vec(int n = 0, T val = T()) : vector<T>(n, val) {}
+};
+
+template <typename T>
+using tpair = pair<T, T>;
+
+template <typename T>
+int Size(const T &a) { return a.size(); }
+
+template <typename T1, typename T2>
+bool maximize(T1 &a, T2 b) {
+    return a < b ? a = b, true : false;
 }
 
-template<class X, class Y> bool minimize(X &a, Y b) { 
-	return a > b ? a = b, 1 : 0; 
+template <typename T1, typename T2>
+bool minimize(T1 &a, T2 b) {
+    return a > b ? a = b, true : false;
 }
-
-// const int dx[8] = {+1, -1, +0, +0, +1, -1, +1, -1}, dy[8] = {+0, +0, +1, -1, +1, -1, -1, +1};
-// const int INF = 1e9 + 11, MAXN = 5e5 + 11, MOD = 1e9 + 7; 
-// const int64_t INFF = (int64_t) 1e18 + 7;
-//_______________________________________________________________________________________________
-
-mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
-
-int64_t randInt(int64_t a, int64_t b) {
-    return uniform_int_distribution<int>(a, b) (rng);
-}
+// End of tempalte
+mt19937 rng(chrono::high_resolution_clock::now().time_since_epoch().count());
 
 #define name ""
 
-void gentest(void) {
-    ofstream out(name".out");
-    
+int main(void) {
+    for (int test = 1; test <= 100; ++test) {
+        ofstream cout(name".inp");
 
-    out.close();
-}
+        cout.close();
 
-int32_t main(void) {
-
-    int test = 100;
-    
-    while(test--) {
-        gentest();
         system(name".exe");
         system(name"_bf.exe");
-        if (system("fc "name".out "name".ans") != 0) {
-            cout << "WA";
+        if (system("fc " name ".out " name ".ans") != 0) {
+            cerr << "WA";
             return 0;
         }
     }
-
-	return 0;
+    return 0;
 }
