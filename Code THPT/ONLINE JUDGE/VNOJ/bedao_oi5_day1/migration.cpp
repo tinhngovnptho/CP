@@ -1,100 +1,74 @@
-/*
-	Author: Tinhnopro (Tinh nop)
-	From: CHV Phu Tho
- */
+// Author: tinhnopro (tinh nop)
 #include <bits/stdc++.h>
 
 using namespace std;
 
-template <typename T, int D>
-struct vec : public vector<vec<T, D - 1>> {
-	static_assert(D >= 1, "Init Error");
-	template <typename... Args>
-	vec(int n = 0, Args... args) : vector<vec<T, D - 1>>(n, vec<T, D - 1>(args...)) {}
-};
-
-template <typename T>
-struct vec<T, 1> : public vector<T> {
-	vec(int n = 0, T val = T()) : vector<T>(n, val) {}
-};
-
-template <typename T>
-using tpair = pair<T, T>;
-
-template <typename T>
-int Size(const T &a) { return a.size(); }
-
-template <typename T1, typename T2>
-bool maximize(T1 &a, T2 b) {
-	return a < b ? a = b, true : false;
-}
-
-template <typename T1, typename T2>
-bool minimize(T1 &a, T2 b) {
-	return a > b ? a = b, true : false;
-}
-// End of tempalte
-
 const int MAXN = 5011;
 const int64_t INF = (int64_t) 1e18 + 11;
 
-struct Node {
-	int v, w;
-	
-	Node(int _v, int _w) : v(_v), w(_w) {}
-};
-
 int n;
-vector<Node> adj[MAXN];
+vector<pair<int, int> > adj[MAXN];
+int sz[MAXN];
+int64_t dp[MAXN][MAXN][2], dist[MAXN];
 
-int dist[MAXN][MAXN];
-
-int root;
-
-void dfs(int u, int parent = -1) {
-	for (auto &x : adj[u]) if (x.v != parent) {
-		dist[root][x.v] = dist[root][u] + x.w;
-		dfs(x.v, u);
-	}
+void minimize(int64_t &a, int64_t b) {
+    if (a > b) a = b;
 }
 
+void dfs(int u, int parent = -1) {
+    for (auto &x : adj[u]) if (x.first != parent) {
+        dist[x.first] = dist[u] + x.second;
+        dfs(x.first, u);
+    }
+}
 
-void Tinhnopro(void) {
-	cin >> n;
-	for (int i = 1; i < n; ++i) {
-		int u, v, w; cin >> u >> v >> w; 
-		adj[u].emplace_back(v, w);
-		adj[v].emplace_back(u, w);
-	}
-	for (root = 1; root <= n; ++root) {
-		dist[root][root] = 0;
-		dfs(root);
-	}
+void dfs_dp(int u, int parent = -1) {
+    memset(dp[u], 0x3f, sizeof(dp[u]));
+    sz[u] = 1;
+    dp[u][1][0] = dp[u][0][0] = 0;
+    dp[u][1][1] = -dist[u];
+    for (auto &x : adj[u]) if (x.first != parent) {
+        int v = x.first;
+        int w = x.second;
+        dfs_dp(v, u);
+        for (int cntu = sz[u]; cntu >= 0; --cntu) {
+            for (int cntv = 0; cntv <= sz[v]; ++ cntv) {
+                int64_t W = 2 * w * (cntv > 0);
+                minimize(dp[u][cntu + cntv][0], dp[u][cntu][0] + dp[v][cntv][0] + W);
+                minimize(dp[u][cntu + cntv][1], dp[u][cntu][1] + dp[v][cntv][0] + W);
+                minimize(dp[u][cntu + cntv][1], dp[u][cntu][0] + dp[v][cntv][1] + W);
+            }
+        }
+        sz[u] += sz[v];
+    }
+}
 
-	vec<int64_t, 2> dp(n, n, INF);
-
-	dp[1][1] = 0;
-
-	for (int cnt = 2; cnt <= n; ++cnt) {
-		for (int i = 1; i <= n; ++i) {
-			for (int j = 1; j <= n; ++j) {
-				minimize(dp[i][cnt], dp[j][cnt - 1] + dist[i][j]);
-			}
-		}
-	}
+void run_case(void) {
+    cin >> n;
+    for (int i = 1, u, v, w; i < n; ++i) {
+        cin >> u >> v >> w;
+        adj[u].emplace_back(v, w);
+        adj[v].emplace_back(u, w);
+    }
+    dfs(1);
+    dfs_dp(1);
+    for (int i = 1; i <= n; ++i) {
+        cout << dp[1][i][1] << '\n';
+    }
 }
 
 int main(void) {
-	ios_base::sync_with_stdio(false);
-	cin.tie(nullptr);
-#define name "migration"
-	if (fopen(name".inp", "r"))
-		freopen(name".inp", "r", stdin),
-		freopen(name".out", "w", stdout);
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
 
-	// int t; cin >> t; while (t--)
-	Tinhnopro();
+    if (fopen("migration.inp", "r")) {
+        freopen("migration.inp", "r", stdin);
+        freopen("migration.out", "w", stdout);
+    }
 
-	cerr << "\nRuntime: " << 1.0 * clock() / CLOCKS_PER_SEC << ".s \n";
-	return 0;
+    int tests = 1;
+    // cin >> tests;
+    while (tests--) run_case();
+    cerr << "\nRuntime: " << 1.0 * clock() / CLOCKS_PER_SEC << ".s tinhnop";
 }
+
