@@ -69,9 +69,10 @@ string to_string(pair<A, B> p) {
   return "(" + to_string(p.first) + ", " + to_string(p.second) + ")";
 }
 
-void DBG(void) {
+void DBG() {
 	cerr << "]" << endl;
 }
+
 template<class H, class... T>
 void DBG(H h, T... t) {
 	cerr << to_string(h);
@@ -83,4 +84,4 @@ void DBG(H h, T... t) {
 #define debug(...) cerr << "Line(" << __LINE__ << ") -> [" << #__VA_ARGS__ << "]: [", DBG(__VA_ARGS__)
 #else
 #define debug(...) 0
-#endif
+#endif // tinhnop_local

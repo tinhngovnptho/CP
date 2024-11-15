@@ -1,40 +1,31 @@
-/*
-	Author: Tinhnopro (a.k.a Tinh nop)
-	From: CHV Phu Tho with luv <3
-*/
+/**
+ * author: tinhnopro (tinh nop)
+ * created: 2024-11-15
+**/
 #include <bits/stdc++.h>
 
 using namespace std;
 
-//{ template
 #ifdef tinhnop_local
 #include "D:\Tinhnopro\header\debug.h"
 #else
 #define debug(...) 0
 #endif // tinhnop_local
 
-#define	file(name)  if (fopen(name".inp", "r")) \
-freopen(name".inp", "r", stdin), freopen(name".out", "w", stdout)
-
-
-void tinhnop(void);
-
-int main(void) {
-	cin.tie(0)->sync_with_stdio(0);
-
-	file("");
-
-	int testcases = 1;
-	cin >> testcases;
-	for (int test = 1; test <= testcases; ++test) {
-//		cout << "Case #" << test << ": ";
-		tinhnop();
-	}
-
-	return 0;
-}
-//}
+#define ALL(v) (v).begin(), (v).end()
+#define ssize(s) ((signed) (s).size())
 
 void tinhnop() {
 
+}
+///////////////////////////////////////////
+signed main() {
+	ios::sync_with_stdio(false);
+	cin.tie(0);
+	freopen(".inp", "r", stdin);
+	freopen(".out", "w", stdout);
+///////////////////////////////////////////
+	tinhnop();
+//	cerr << "\n[time] " << 1.0 * clock() / CLOCKS_PER_SEC << "[ms]";
+	return 0;
 }

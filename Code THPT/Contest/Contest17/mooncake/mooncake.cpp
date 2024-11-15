@@ -31,7 +31,7 @@ template<class X, class Y> bool minimize(X &a, Y b) {
     return a > b ? a = b, 1 : 0; 
 }
 
-const int MAXN = 1e5 + 11, MAX = 1e6 + 11; 
+const int MAXN = 2e5 + 11, MAX = 1e6 + 11; 
 // const int MOD = 1e9 + 7; 
 const int INF = 1e9 + 11; const ll INFF = (ll) 1e18 + 11;
 // const int LOG = 22;
@@ -62,14 +62,13 @@ int32_t main(void) {
         t[y] = sum[n] - 1ll * y * n;
         int k = lower_bound(a + 1, a + n + 1, y) - a - 1;
         d[y] = sum[k] - 1ll * y * k;
-    }
+    } 
 
     int q; cin >> q; while (q--) {
         ll x, y; cin >> x >> y;
         ll res = INFF;
-        int k;
         FOR(i, 1, n) {
-            if (minimize(res, y * t[a[i]] - (x + y) * d[a[i]])) k = a[i];
+            (minimize(res, y * t[a[i]] - (x + y) * d[a[i]]));
         }
         // cout << k << " ";
         cout << res << el;
