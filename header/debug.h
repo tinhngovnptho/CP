@@ -80,8 +80,8 @@ void DBG(H h, T... t) {
 		cerr << ", ";
 	DBG(t...);
 }
-#ifdef tinhnop_local
+#ifdef LOCAL
 #define debug(...) cerr << "Line(" << __LINE__ << ") -> [" << #__VA_ARGS__ << "]: [", DBG(__VA_ARGS__)
 #else
 #define debug(...) 0
-#endif // tinhnop_local
+#endif // LOCAL
