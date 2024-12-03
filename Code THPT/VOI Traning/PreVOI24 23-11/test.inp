@@ -1,0 +1,14 @@
+->chat nhi phan do dai k thoa man
+
+->dem xem co bao nhieu day con do dai k thoa man 
+
+1 3 2
+tim day con tang va dem so luong day con tang dai nhat 
+
+dp[i] la day con tang dai nhat ket thuc tai i 
+
+dp[i] = max(dp[j]) + 1 voi a[j] < a[i]
+
+-> bit de kiem soat 
+
+

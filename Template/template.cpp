@@ -2,33 +2,27 @@
  * author: tinhnopro (tinh nop)
  * created: $TODAY_UTC
 **/
+#ifdef LOCAL
+#include "debug.h"
+#else
+#define debug(...) 0
+#endif // LOCAL
+
 #include <bits/stdc++.h>
+
+#define setIO(name) \
+if (ifstream(name".inp")) freopen(name".inp", "r", stdin), freopen(name".out", "w", stdout)
 
 using namespace std;
 
-#ifdef LOCAL
-#include "D:\Tinhnopro\header\debug.h"
-#else
-#define debug(...)
-#endif // LOCAL
+template <typename T> int isize(const T& a) { return a.size(); }
 
-#define ssz(s) ((int) (s).size())
-#define ALL(v) (v).begin(), (v).end()
+template <typename T1, typename T2> bool maximize(T1& a, T2 b) { return a < b ? a = b, true : false; }
+template <typename T1, typename T2> bool minimize(T1& a, T2 b) { return a > b ? a = b, true : false; }
 
-typedef long long int64;
-typedef unsigned long long uint64;
-////////////////////////////////////////
 
-void tinhnop() {
-
-}
-////////////////////////////////////////
-int main() {
+int32_t main() {
 	ios::sync_with_stdio(false);
-	cin.tie(0);
-	freopen(".inp", "r", stdin);
-	freopen(".out", "w", stdout);
-///////////////////////////////////////
-	tinhnop();
-//	cerr << "\n[time] " << 1.0 * clock() / CLOCKS_PER_SEC << "[ms]";
+	cin.tie(0); setIO("");
+
 }

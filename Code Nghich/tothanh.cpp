@@ -21,7 +21,7 @@ namespace std {
 	};
 	// size
 	template<typename T> int Size(const T &a) {  return a.size(); }
-}
+} // namespace std
 using namespace std;
 
 struct BIT{
