@@ -1,182 +1,163 @@
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 
-// Author: Tinhnopro (a.k.a NVT)
-// ngo viet tinh
+#define TASK "grandelection"
+
 using namespace std;
 
-#define el '\n'
-#define pii pair<int, int>
-#define fi first
-#define se second
-#define vi vector<int>
-#define ll long long
-#define ld long double
-//#define int long long
-#define FOR(i, a, b) for (int i = (a); i <= (b); ++i)
-#define FORD(i, a, b) for (int i = (a); i >= (b); --i)
-#define FORA(it, v) for (__typeof((v).begin()) it = (v).begin(); it != (v).end(); ++it)
-#define SZ(v) (int) (v).size()
-#define ALL(v) (v).begin(), (v).end()
-#define MASK(x) (1LL << (x))
-#define BIT(x, i) ((i) & MASK(x))
-#define ONBIT(x, i) ((i) | MASK(x))
-#define OFFBIT(x, i) ((i) & ~MASK(x))
-
-template <class X, class Y> bool maximize(X &a, const Y &b) { return a < b ? a = b, 1 : 0; }
-template <class X, class Y> bool minimize(X &a, const Y &b) { return a > b ? a = b, 1 : 0; }
-
-const int MAXN = 1e5 + 11;
-const int LOG = log2(MAXN);
-
-int n, par[MAXN], x[MAXN], v[MAXN];
-vi adj[MAXN], virAdj[MAXN], nodes[MAXN];
-vi divs[MAXN];
-int num[MAXN], depth[MAXN], st[MAXN][LOG + 1], dp[MAXN], vist[MAXN];
-
-void dfs(int u, int d) {
-    static int timeDFS = 0;
-    num[u] = ++timeDFS;
-    depth[u] = d;
-    for (int v : adj[u]) {
-        dfs(v, d + 1);
-    }
+inline void setIO() {
+	if (fopen(TASK ".inp", "r")) {
+		freopen(TASK ".inp", "r", stdin);
+		freopen(TASK ".out", "w", stdout);
+	}
 }
 
-void preprocess(void) {
-    FOR(i, 2, MAXN - 1) {
-        for (int j = i; j < MAXN; j += i) divs[j].push_back(i);
-    }
+//mt19937_64 rng(chrono::high_resolution_clock::now().time_since_epoch().count());
+
+const int maxN = 1e5 + 5;
+const int LOG = 19;
+
+int n, x[maxN], v[maxN];
+vector<int> adj[maxN], vadj[maxN], divs[maxN];
+int up[LOG + 1][maxN], timeIn[maxN], timeOut[maxN], depth[maxN];
+
+vector<int> list_divs, list_nodes[maxN];
+int mark[maxN];
+int64_t dp[maxN];
+
+void sieve() {
+	for (int i = 2; i < maxN; ++i) {
+		for (int j = i; j < maxN; j += i) divs[j].push_back(i);
+	}
 }
 
-void buildLCA(void) {
-    FOR(i, 1, n) st[i][0] = par[i];
-    FOR(j, 1, LOG) for (int i = 1; i <= n; ++i) {
-        st[i][j] = st[st[i][j - 1]][j - 1];
-    }
+void dfs(int u) {
+	static int timeDFS = 0;
+	timeIn[u] = ++timeDFS;
+
+	for (int v : adj[u]) {
+		depth[v] = depth[u] + 1;
+		up[0][v] = u;
+
+		for (int i = 1; i <= LOG; ++i)
+			up[i][v] = up[i - 1][up[i - 1][v]];
+
+		dfs(v);
+	}
+
+	timeOut[u] = timeDFS;
 }
 
-int LCA(int u, int v) {
-    if (u == v) return u;
+int lca(int u, int v) {
+	if (u == v) return u;
 
-    if (depth[u] < depth[v]) swap(u, v);
+	if (depth[u] < depth[v]) swap(u, v);
 
-    FORD(i, LOG, 0) if (depth[st[u][i]] >= depth[v]) u = st[u][i];
+	int k = depth[u] - depth[v];
 
-    if (u == v) return u;
+	for (int i = 0; (1 << i) <= k; ++i)
+		if ((k >> i) & 1) u = up[i][u];
 
-    FORD(i, LOG, 0) if (st[u][i] != st[v][i]) {
-        u = st[u][i];
-        v = st[v][i];
-    }
-    return st[u][0];
+	if (u == v) return u;
+
+	for (int i = LOG; ~i; --i)
+		if (up[i][v] != up[i][u]) u = up[i][u], v = up[i][v];
+
+	return up[0][u];
 }
 
-bool cmp(const int &u, const int &v) {
-    return num[u] < num[v];
+bool combine(const int& x, const int& y) {
+	return timeIn[x] < timeIn[y];
 }
 
-void buildVirtualTree(vi &node) {
-    sort(ALL(node), cmp);
-    int m = SZ(node);
+void buildVTree(vector<int>&  nodes) {
+	sort(nodes.begin(), nodes.end(), combine);
 
-    FOR(i, 0, m - 2) {
-        int u = node[i];
-        int v = node[i + 1];
-        node.push_back(LCA(u, v));
-    }
+	int m = nodes.size() - 1;
 
-    sort(ALL(node), cmp);
-    node.resize(unique(ALL(node)) - node.begin());
-    m = SZ(node);
+	for (size_t i = 0; i < m; ++i) {
+		int u = nodes[i];
+		int v = nodes[i + 1];
+		nodes.push_back(lca(u, v));
+	}
 
-    FOR(i, 0, m - 1) {
-        int u = node[i];
-        virAdj[u].clear();
-        dp[u] = -1;
-    }
+	sort(nodes.begin(), nodes.end(), combine);
 
-    FOR(i, 0, m - 2) {
-        int u = LCA(node[i], node[i + 1]);
-        int v = node[i + 1];
-        virAdj[u].push_back(v);
-    }
+	nodes.resize(unique(nodes.begin(), nodes.end()) - nodes.begin());
+
+	for (size_t i = 0; i < nodes.size(); ++i) {
+		int u = nodes[i];
+		vadj[u].clear();
+		dp[u] = -1;
+	}
+
+	for (size_t i = 0; i < nodes.size() - 1; ++i) {
+		int u = nodes[i];
+		int v = nodes[i + 1];
+		vadj[lca(u, v)].push_back(v);
+	}
 }
 
-void calc(int u, const int &d) {
-    dp[u] = 0;
-    for (int &v : virAdj[u]) {
-        if (dp[v] == -1) {
-            calc(v, d);
-        }
-        dp[u] += dp[v];
-    }
-    if (dp[u] < v[u] && x[u] % d == 0) {
-        dp[u] = v[u];
-    }
+void calc(int u, const int& D) {
+	dp[u] = 0;
+	for (int v : vadj[u]) {
+		calc(v, D);
+		dp[u] += dp[v];
+	}
+	if (x[u] % D == 0) dp[u] = max(dp[u], (int64_t) v[u]);
 }
 
-void process(void) {
-    cin >> n;
-    par[1] = 1;
-    FOR(i, 2, n) {
-        cin >> par[i];
-        adj[par[i]].push_back(i);
-    }
-    FOR(i, 1, n) cin >> x[i] >> v[i];
+void solve() {
+	cin >> n;
+	for (int i = 2, p; i <= n; ++i) {
+		cin >> p;
+		adj[p].push_back(i);
+	}
 
-    buildLCA();
-    dfs(1, 1);
-    memset(vist, 0, sizeof vist);
+	for (int i = 1; i <= n; ++i) {
+		cin >> x[i] >> v[i];
+	}
 
-    vi divisor;
+	up[0][1] = 1;
+	dfs(1);
 
-    FOR(i, 1, n) {
-        for (int &d : divs[x[i]]) {
-            if (vist[d] == 0) {
-                vist[d] = 1;
-                nodes[d].clear();
-                divisor.push_back(d);
-            }
-            nodes[d].push_back(i);
-        }
-    }
+	memset(mark, 0, sizeof(mark));
+	list_divs.clear();
 
-    ll res = -1, ru, rd;
+	for (int i = 1; i <= n; ++i) {
+		for (int d : divs[x[i]]) {
+			if (!mark[d]) {
+				mark[d] = 1;
+				list_nodes[d].clear();
+				list_divs.push_back(d);
+			}
+			list_nodes[d].push_back(i);
+		}
+	}
 
+	int64_t ans = -1;
 
+	for (int d : list_divs) {
+		buildVTree(list_nodes[d]);
+		for (int u : list_nodes[d]) if (dp[u] == -1) {
+			calc(u, d);
+			ans = max(ans, 1LL * d * dp[u]);
+			break;
+		}
+	}
 
-    for (int &d : divisor) {
-        buildVirtualTree(nodes[d]);
+	cout << ans << '\n';
 
-        for (int &u : nodes[d]) {
-            if (dp[u] == -1) calc(u, d);
-            if (maximize(res, 1LL * dp[u] * d)) {
-                rd = d;
-                ru = dp[u];
-            }
-        }
-    }
-
-    cout << res << el;
-    FOR(i, 1, n) {
-        adj[i].clear();
-        virAdj[i].clear();
-    }
+	for (int i = 1; i <= n; ++i) adj[i].clear();
 }
 
-signed main(void) {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
+int32_t main() {
+	ios::sync_with_stdio(false); cin.tie(0);
+	setIO();
 
-    #define Task "grandelection"
-    if (fopen(Task".inp", "r")) {
-        freopen(Task".inp", "r", stdin);
-        freopen(Task".out", "w", stdout);
-    }
-
-    preprocess();
-    int t; cin >> t; while (t--)
-    process();
-
-    return 0;
+	sieve();
+	int t;
+	cin >> t;
+	while (t--) {
+		solve();
+	}
 }

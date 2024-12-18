@@ -1,0 +1,100 @@
+/**
+ * author: tinhnopro (tinh nop)
+ * created: 2024-12-05
+**/
+#ifdef LOCAL
+#include "debug.h"
+#else
+#define debug(...) 0
+#endif // LOCAL
+
+#include <bits/stdc++.h>
+
+#define TASK "sum3"
+
+using namespace std;
+
+const int maxN = 1e5 + 5, LOG = 17;
+
+int n, q;
+vector<int> adj[maxN];
+int64_t cost[maxN], f[maxN];
+int depth[maxN], st[LOG + 1][maxN];
+
+void dfs(int u, int parent) {
+	st[0][u] = parent;
+	for (int i = 1; i <= LOG; ++i) st[i][u] = st[i - 1][st[i - 1][u]];
+
+	for (int v : adj[u]) if (v ^ parent) {
+		depth[v] = depth[u] + 1;
+		dfs(v, u);
+	}
+}
+
+int lca(int u, int v) {
+	if (u == v) return u;
+	if (depth[u] < depth[v]) swap(u, v);
+	int len = depth[u] - depth[v];
+
+	for (int i = 0; i <= LOG; ++i) {
+		if ((len >> i) & 1) u = st[i][u];
+	}
+
+	if (u == v) {
+		return u;
+	}
+
+	for (int i = LOG; ~i; --i) {
+		if (st[i][u] != st[i][v]) {
+			u = st[i][u];
+			v = st[i][v];
+		}
+	}
+
+	return st[0][u];
+}
+
+void dfs2(int u, int parent) {
+	for (int v : adj[u]) if (v ^ parent) {
+		dfs2(v, u);
+		f[u] += f[v];
+		debug(u, v, f[u], f[v]);
+	}
+}
+
+int32_t main() {
+	cin.tie(0)->sync_with_stdio(false);
+	if (fopen(TASK ".inp", "r")) {
+		freopen(TASK ".inp", "r", stdin);
+		freopen(TASK ".out", "w", stdout);
+	}
+
+	cin >> n;
+	for (int i = 1; i <= n; ++i) {
+		cin >> cost[i];
+	}
+
+	for (int i = 1; i < n; ++i) {
+		int u, v;
+		cin >> u >> v;
+		adj[u].push_back(v);
+		adj[v].push_back(u);
+	}
+
+	dfs(1, 0);
+
+	cin >> q;
+	while (q--) {
+		int u, v, w; cin >> u >> v >> w;
+
+		f[u] += w;
+		f[v] += w;
+		f[lca(u,v)] -= w;
+		f[st[0][lca(u, v)]] -= w;
+	}
+
+	dfs2(1, 1);
+
+	for (int i = 1; i <= n; ++i) cout << cost[i] + f[i] << ' ';
+}
+

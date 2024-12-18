@@ -1,129 +1,115 @@
-// Author: tinhnopro (ngh)
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
+
+#define TASK "segtree_itladder"
+#define int long long
 
 using namespace std;
 
-#define el '\n'
-#define fi first
-#define se second
-#define REP(i, a, b) for (int i = (a); i < (b); ++i)
-#define FOR(i, a, b) for (int i = (a); i <= (int) (b); ++i)
-#define FORD(i, a, b) for (int i = (a); i >= (int) (b); --i)
-#define all(v) (v).begin(), (v).end()
+const int maxN = 1e5 + 5;
+const int mod = 1e9 + 7;
 
-#define mask(x) (1LL << (x))
-#define getbit(i, mask) ((mask >> i) & 1LL)
-#define onbit(i, mask) (mask | MASK(i))
-#define offbit(i, mask) mask & ~(MASK(i))
-#define cntbit(x) __builtin_popcountll(x)
-
-#define name "segtree_itladder"
-
-using ll = long long;
-using ld = long double;
-using ii = pair<int, int>;
-using vi = vector<int>;
-
-template<class X, class Y> bool maximize(X &a, Y b) { 
-    return a < b ? a = b, 1 : 0; 
-}
-template<class X, class Y> bool minimize(X &a, Y b) { 
-    return a > b ? a = b, 1 : 0; 
+void add(int& a, int b) {
+	a += b;
+	if (a >= mod) a -= mod;
 }
 
-const int MAXN = 1e5 + 11; 
-const int MOD = 1e9 + 7; 
-// const int INF = 1e9 + 11; const ll INFF = (ll) 1e18 + 11;
-// const int LOG = 22;
-// const int BASE = 311;
-// const int BLOCK = 330;
+int mul(int a, int b) {
+	long long x = 1LL * a * b;
+	return x % mod;
+}
 
-int n, q;
+int sum(int l, int r) {
+	int R = (1LL * r * (r + 1) / 2) % mod;
+	int L = (1LL * (l - 1) * l / 2) % mod;
+	R = (R - L + mod) % mod;
+	return R;
+}
 
 struct Node {
-    ll lz_a, lz_b, val; 
+	int mul, add, val;
 
-    Node() {
-        lz_a = lz_b = val = 0;
-    }
+	Node() : mul(0), add(0), val(0) {}
+	Node(int _mul, int _add, int _val) : mul(_mul), add(_add), val(_val) {}
 };
 
-Node seg[4 * MAXN];
+Node st[4 * maxN];
 
-int sum(int a, int b) {
-    ll x = (b - a + 1) * (b - a) / 2; 
-    x %= MOD;
-    return x;
-}
 
-void down(const int &id,const int &l,const int &r,const int &mid) {
-    if (!seg[id].lz_a && !seg[id].lz_b) return ;
-    seg[id << 1].val += 1ll * seg[id].lz_a * sum(l, mid);
-    seg[id << 1].val %= MOD;
-    seg[id << 1].val += 1ll * seg[id].lz_b * (mid - l + 1);
-    seg[id << 1].val %= MOD;
-    seg[id << 1 | 1].val += 1ll * seg[id].lz_a * sum(mid + 1, r);
-    seg[id << 1 | 1].val %= MOD;
-    seg[id << 1 | 1].val += 1ll * seg[id].lz_b * (r - mid);
-    seg[id << 1 | 1].val %= MOD;
-    seg[id << 1].lz_a += seg[id].lz_a;
-    seg[id << 1].lz_b += seg[id].lz_b;
-    seg[id << 1 | 1].lz_a += seg[id].lz_a;
-    seg[id << 1 | 1].lz_b += seg[id].lz_b;
-    seg[id].lz_a = seg[id].lz_b = 0;    
+void down(const int& id, const int& l, const int& r, const int& mid) {
+
+	add(st[id << 1].add, st[id].add);
+	add(st[id << 1 | 1].add, st[id].add);
+
+	add(st[id << 1].mul, st[id].mul);
+	add(st[id << 1 | 1].mul, st[id].mul);
+
+	add(st[id << 1].val, mul(mid - l + 1, st[id].add));
+	add(st[id << 1 | 1].val, mul(r - mid, st[id].add));
+
+	add(st[id << 1].val, mul(sum(l, mid), st[id].mul));
+	add(st[id << 1 | 1].val, mul(sum(mid + 1, r), st[id].mul));
+
+	st[id].mul = st[id].add = 0;
 }
 
 void update(int id, int l, int r, int u, int v, int a, int b) {
-    if (l > v || r < u) return ;
-    if (u <= l && r <= v) {
-        seg[id].val += 1ll * a * sum(l, r);
-        seg[id].val %= MOD;
-        seg[id].val += 1ll * b * (r - l + 1);
-        seg[id].val %= MOD;
-        seg[id].lz_a += a;
-        seg[id].lz_b += b;
-        return ;
-    }
+	if (l > v || r < u) return ;
+	if (u <= l && r <= v) {
+		add(st[id].add, (b - mul(a, u) + mod) % mod);
+		add(st[id].mul, a);
+		add(st[id].val, mul(sum(l, r), a));
+		add(st[id].val, mul(r - l + 1, (b - mul(a, u) + mod) % mod));
+		return ;
+	}
 
-    int mid = (l + r) >> 1;
-    down(id, l, r, mid);
+	int mid = (l + r) >> 1;
 
-    update(id << 1, l, mid, u, v, a, b);
-    update(id << 1 | 1, mid + 1, r, u, v, a, b);
-    
-    seg[id].val = seg[id << 1].val + seg[id << 1 | 1].val;
-    seg[id].val %= MOD;
+	down(id, l, r, mid);
+
+	update(id << 1, l, mid, u, v, a, b);
+	update(id << 1 | 1, mid + 1, r, u, v, a, b);
+
+	st[id].val = st[id << 1].val + st[id << 1 | 1].val;
+	st[id].val %= mod;
 }
 
-int getsum(int id, int l, int r, int u, int v) {
-    if (l > v || r < u) return 0;
-    if (u <= l && r <= v) return seg[id].val;
-    int mid = (l + r) >> 1;
-    down(id, l, r, mid);
-    return (getsum(id << 1, l, mid, u, v) + getsum(id << 1 | 1, mid + 1, r, u, v)) % MOD;
+int query(int id, int l, int r, int u, int v) {
+	if (l > v || r < u) return 0 % mod;
+	if (u <= l && r <= v) {
+		return st[id].val % mod;
+	}
+
+	int mid = (l + r) >> 1;
+	down(id, l, r, mid);
+
+	return ( query(id << 1, l, mid, u, v) +
+					query(id << 1 | 1, mid + 1, r, u, v)) % mod;
 }
 
-int32_t main(void) {
-    ios_base::sync_with_stdio(false); 
-    cin.tie(nullptr);
+int n, q;
 
-    if (fopen(name".inp", "r")) {
-        freopen(name".inp", "r", stdin);
-        freopen(name".out", "w", stdout);
-    }
-    //___________________________________
-    cin >> n >> q;
 
-    while (q--) {
-        int type, l, r, a, b;
-        cin >> type >> l >> r;
-        if (type == 1) {
-            cin >> a >> b;
-            update(1, 1, n, l, r, a, b);
-        } else {
-            cout << getsum(1, 1, n, l, r) << el;
-        }
-    }
+int32_t main() {
+	ios::sync_with_stdio(false);
+	cin.tie(nullptr);
 
-    return 0;
+	if (fopen(TASK".inp", "r")) {
+		freopen(TASK".inp", "r", stdin);
+		freopen(TASK".out", "w", stdout);
+	}
+
+	cin >> n >> q;
+
+	while (q--) {
+		int type; cin >> type;
+
+		if (type == 1) {
+			int l, r, a, b;
+			cin >> l >> r >> a >> b;
+			update(1, 1, n, l, r, a, b);
+		} else {
+			int l, r; cin >> l >> r;
+			cout << query(1, 1, n, l, r) << '\n';
+		}
+	}
 }

@@ -1,0 +1,8 @@
+{
+	"cph.general.saveLocation": "",
+	"files.associations": {
+		"cstddef": "cpp",
+		"text_encoding": "cpp",
+		"thread": "cpp"
+	}
+}
