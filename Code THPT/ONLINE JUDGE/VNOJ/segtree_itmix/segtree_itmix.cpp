@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 
-#define TASK ""
+#define TASK "segtree_itmix"
 
 using namespace std;
 
@@ -11,6 +11,16 @@ const int mod = 1e9 + 7;
 
 int n, q; 
 int a[maxN];
+
+void mul(int& a, int b) {
+	i64 tmp = 1LL * a * b % mod; 
+	a = tmp; 
+}
+
+void add(int& a, int b) {
+	a += b; 
+	if (a >= mod) a -= mod; 
+}
 
 struct Node {
 	int val, mul, add; 
@@ -34,8 +44,20 @@ void build(int id, int l, int r) {
 		return ; 
 	}
 
-	if (l > v || r < u) {
-		
+	int mid = (l + r) >> 1; 
+	build(id << 1, l, mid);
+	build(id << 1 | 1, mid + 1, r); 
+
+	st[id] = st[id << 1] + st[id << 1 | 1];
+}
+
+void update(int id, int l, int r, int u, int v, int a, int b) {
+	if (l > v || r < u) return ; 
+	if (u <= l && r <= v) {
+		mul(st[id].val, a); 
+		add(st[id].val, b); 
+		st[id].mul += a; 
+		st[id].add += b; 
 	}
 }
 
